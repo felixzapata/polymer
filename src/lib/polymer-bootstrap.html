@@ -42,8 +42,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       if (prototype.extends) {
         options.extends = prototype.extends;
       }
-      Polymer.telemetry._registrate(prototype);
-      document.registerElement(prototype.is, options);
+      
+      if (!Polymer.telemetry.isRegistered(prototype.is)) {
+        Polymer.telemetry._registrate(prototype);
+        document.registerElement(prototype.is, options);
+      }
       return factory;
     };
 
@@ -94,6 +97,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
     dumpRegistrations: function() {
       this.registrations.forEach(this._regLog);
+    },
+    isRegistered: function(componentName){
+      var found = false;
+      var i = this.registrations.length - 1;
+      while(!found && i >= 0) {
+        found = this.registrations[i].is === componentName;
+        i--;
+      }
+      return found;
     }
   };
 
